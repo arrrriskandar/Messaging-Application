@@ -28,11 +28,17 @@ const App = () => {
   }else if (isFirstLaunch == true ) {
     return (
       <NavigationContainer>
-        <AppStack.Navigator
-          headerMode='none'
-        >
-          <AppStack.Screen name='OnBoarding' component={OnBoardingScreen} />
-          <AppStack.Screen name='Login' component={LoginScreen} />
+        <AppStack.Navigator>
+          <AppStack.Screen
+            name='OnBoarding'
+            component={OnBoardingScreen}
+            options={{ headerShown: false }} // Hide the header for OnBoardingScreen
+          />
+          <AppStack.Screen
+            name='Login'
+            component={LoginScreen}
+            options={{ headerShown: false }} // Hide the header for LoginScreen
+          />
         </AppStack.Navigator>
       </NavigationContainer>
     )
@@ -40,8 +46,16 @@ const App = () => {
     return (
       <NavigationContainer>
         <AppStack.Navigator>
-          <AppStack.Screen name='OnBoarding' component={OnBoardingScreen} />
-          <AppStack.Screen name='Login' component={LoginScreen} />
+          <AppStack.Screen
+            name='OnBoarding'
+            component={OnBoardingScreen}
+            options={{ headerShown: false }} // Hide the header for OnBoardingScreen
+          />
+          <AppStack.Screen
+            name='Login'
+            component={LoginScreen}
+            options={{ headerShown: false }} // Hide the header for LoginScreen
+          />
         </AppStack.Navigator>
       </NavigationContainer>
     )

@@ -8,19 +8,19 @@ const OnBoardingScreen = ({navigation}) => {
     onSkip={() => navigation.replace('Login')}
       pages={[
         {
-          backgroundColor: '#1A237E',
+          backgroundColor: '#000080',
           image: <Image source={require('../assets/favicon.png')} />,
-          title: 'Onboarding Page 1',
+          title: 'Welcome to Chatter! ',
           subtitle: 'Done with React Native Onboarding Swiper',
         },
         {
-          backgroundColor: '#1A237E',
+          backgroundColor: '#0000cc',
           image: <Image source={require('../assets/favicon.png')} />,
           title: 'Onboarding Page 2',
           subtitle: 'Done with React Native Onboarding Swiper',
         },
         {
-          backgroundColor: '#1A237E',
+          backgroundColor: '#0000cc',
           image: <Image source={require('../assets/favicon.png')} />,
           title: 'Onboarding Page 3',
           subtitle: 'Done with React Native Onboarding Swiper',
