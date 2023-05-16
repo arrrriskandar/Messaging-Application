@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import OnBoardingScreen from './screens/OnBoardingScreen';
 import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen';
 import React, { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -32,12 +33,26 @@ const App = () => {
           <AppStack.Screen
             name='OnBoarding'
             component={OnBoardingScreen}
-            options={{ headerShown: false }} // Hide the header for OnBoardingScreen
+            options={{ headerShown: false }} 
           />
           <AppStack.Screen
             name='Login'
             component={LoginScreen}
-            options={{ headerShown: false }} // Hide the header for LoginScreen
+            options={{ headerShown: false }} 
+          />
+          <AppStack.Screen
+            name='SignUp'
+            component={SignUpScreen}
+            options={({navigation}) => ({
+              title: '',
+              headerStyle: {
+                backgroundColor: '#f9fafd',
+                borderBottomWidth: 0,
+              },
+              headerTitleStyle: {
+                borderBottomWidth: 0,
+              },
+            })}
           />
         </AppStack.Navigator>
       </NavigationContainer>
@@ -49,12 +64,26 @@ const App = () => {
           <AppStack.Screen
             name='OnBoarding'
             component={OnBoardingScreen}
-            options={{ headerShown: false }} // Hide the header for OnBoardingScreen
+            options={{ headerShown: false }}
           />
           <AppStack.Screen
             name='Login'
             component={LoginScreen}
-            options={{ headerShown: false }} // Hide the header for LoginScreen
+            options={{ headerShown: false }} 
+          />
+          <AppStack.Screen
+            name='SignUp'
+            component={SignUpScreen}
+            options={({navigation}) => ({
+              title: '',
+              headerStyle: {
+                backgroundColor: '#f9fafd',
+                borderBottomWidth: 0,
+              },
+              headerTitleStyle: {
+                borderBottomWidth: 0,
+              },
+            })}
           />
         </AppStack.Navigator>
       </NavigationContainer>
