@@ -1,19 +1,21 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useContext, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import SocialPlatformButton from '../components/SocialPlatformButton';
+import { AuthContext } from '../navigation/AuthProvider';
 
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+
+  const{login} = useContext(AuthContext);
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/icon.png')}
+        source={require('../assets/logo-black.png')}
         style={styles.logo}
       />
-      <Text style={styles.text}>Messaging App</Text>
       <FormInput 
         labelValue={email}
         onChangeText={(userEmail) => setEmail(userEmail)}
@@ -32,25 +34,11 @@ const LoginScreen = ({navigation}) => {
       />
       <FormButton 
         buttonTitle='Sign In'
-        onPress= {() => alert('Sign in clicked')}
+        onPress= {() => login(email,password)}
       />
-      <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
+      <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.navButtonText}>Forgot Password?</Text>
       </TouchableOpacity>
-      <SocialPlatformButton 
-        buttonTitle='Sign In with Facebook'
-        buttonType='facebook'
-        color= '#4867aa'
-        backgroundColor= '#e6eaf4'
-        onPress={() => {}}
-      />
-      <SocialPlatformButton 
-        buttonTitle='Sign In with Google'
-        buttonType='google'
-        color= '#de4d41'
-        backgroundColor= '#f5e7ea'
-        onPress={() => {}}
-      />
       <TouchableOpacity 
         style={styles.navButton} 
         onPress={() => navigation.navigate('SignUp')}>
@@ -62,15 +50,15 @@ const LoginScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f9fafd',
+    backgroundColor: '#fff',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
   logo: {
-    height: 150,
-    width: 150,
+    height: 250,
+    width: 250,
     resizeMode: 'cover',
   },
   text: {

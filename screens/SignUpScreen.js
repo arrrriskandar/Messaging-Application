@@ -1,17 +1,23 @@
-import React, { Component, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { Component, useContext, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import SocialPlatformButton from '../components/SocialPlatformButton';
+import { AuthContext } from '../navigation/AuthProvider';
 
 const SignUpScreen = ({navigation}) => {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
-  const [confirmPassword,setConfirmPassword] = useState();
+  const {register, fbLogin, googleLogin} = useContext(AuthContext);
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [isTappedPassword, setIsTappedPassword] =useState(false);
+  const [isTappedConfirmPassword, setIsTappedConfirmPassword] =useState(false);
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Create an account</Text>
-      <FormInput 
+      <View style={styles.container}>
+        <Text style={styles.text}>Create an account</Text>
+        <FormInput 
         labelValue={email}
         onChangeText={(userEmail) => setEmail(userEmail)}
         placeholderText='Email'
@@ -26,17 +32,26 @@ const SignUpScreen = ({navigation}) => {
         placeholderText='Password'
         iconType='lock'
         secureTextEntry={true}
+        onBlur={() => setIsTappedPassword(true)}
       />
+      {isTappedPassword && password.match('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$') === null && (
+        <Text style={styles.errorText}>Password must contain minumum 8 characters, at least one uppercase letter, one lowercase letter, one digit and one special character</Text>
+      )}
       <FormInput 
         labelValue={confirmPassword}
-        onChangeText={(userPassword) => setPassword(userPassword)}
+        onChangeText={(userConfirmPassword) => setConfirmPassword(userConfirmPassword)}
         placeholderText='Confirm Password'
         iconType='lock'
         secureTextEntry={true}
+        onBlur={() => setIsTappedConfirmPassword(true)}
       />
+      {isTappedConfirmPassword && password!==confirmPassword && (
+        <Text style={styles.errorText}>Your passwords do not match</Text>
+      )}
       <FormButton 
         buttonTitle='Sign Up'
-        onPress= {() => alert('Sign Up clicked')}
+        disabled={password!==confirmPassword}
+        onPress= {() => register(email,password)}
       />
       <View style={styles.textPrivate}>
         <Text style={styles.color_textPrivate}>By registering, you confirm that you accept our </Text>
@@ -48,20 +63,6 @@ const SignUpScreen = ({navigation}) => {
           <Text style={[styles.color_textPrivate, {color:'#e88832'}]}>Privacy Policy</Text>
         </TouchableOpacity>
       </View>
-      <SocialPlatformButton 
-        buttonTitle='Sign Up with Facebook'
-        buttonType='facebook'
-        color= '#4867aa'
-        backgroundColor= '#e6eaf4'
-        onPress={() => {}}
-      />
-      <SocialPlatformButton 
-        buttonTitle='Sign Up with Google'
-        buttonType='google'
-        color= '#de4d41'
-        backgroundColor= '#f5e7ea'
-        onPress={() => {}}
-      />
       <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Login')}>
         <Text style={styles.navButtonText}>Have an account? Sign In</Text>
       </TouchableOpacity>
@@ -101,6 +102,10 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: 'grey',
   },
+  errorText: {
+    fontSize: 12,
+    color: '#FF0D10',
+  }
 });
 
 export default SignUpScreen;

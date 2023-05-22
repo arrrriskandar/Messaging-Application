@@ -8,22 +8,22 @@ const OnBoardingScreen = ({navigation}) => {
     onSkip={() => navigation.replace('Login')}
       pages={[
         {
-          backgroundColor: '#000080',
-          image: <Image source={require('../assets/favicon.png')} />,
+          backgroundColor: '#1F2D59',
+          image: <Image source={require('../assets/logo-color.png')} style={{ width: 300, height: 300}} />,
           title: 'Welcome to Chatter! ',
-          subtitle: 'Done with React Native Onboarding Swiper',
+          subtitle: 'Connecting people around the world',
         },
         {
-          backgroundColor: '#0000cc',
-          image: <Image source={require('../assets/favicon.png')} />,
-          title: 'Onboarding Page 2',
-          subtitle: 'Done with React Native Onboarding Swiper',
+          backgroundColor: '#1F2D59',
+          image: <Image source={require('../assets/instant-messaging.png')} style={{ width: 250, height: 250}} />,
+          title: 'Enjoy instant communication',
+          subtitle: 'Stay connected with friends, family, and colleagues in real-time.',
         },
         {
-          backgroundColor: '#0000cc',
-          image: <Image source={require('../assets/favicon.png')} />,
-          title: 'Onboarding Page 3',
-          subtitle: 'Done with React Native Onboarding Swiper',
+          backgroundColor: '#1F2D59',
+          image: <Image source={require('../assets/multimedia.png')} style={{ width: 250, height:250 }} />,
+          title: 'Supports multimedia sharing',
+          subtitle: 'Share photos, videos, and other media files seamlessly within the app with the people who matter most to you.',
         },
       ]}
     />
@@ -31,12 +31,3 @@ const OnBoardingScreen = ({navigation}) => {
 }
 
 export default OnBoardingScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
