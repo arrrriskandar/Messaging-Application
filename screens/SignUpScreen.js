@@ -1,12 +1,11 @@
-import React, { Component, useContext, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
-import SocialPlatformButton from '../components/SocialPlatformButton';
 import { AuthContext } from '../navigation/AuthProvider';
 
 const SignUpScreen = ({navigation}) => {
-  const {register, fbLogin, googleLogin} = useContext(AuthContext);
+  const {register} = useContext(AuthContext);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

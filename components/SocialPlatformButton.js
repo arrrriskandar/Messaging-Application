@@ -1,5 +1,4 @@
 //import liraries
-import React, { Component } from 'react';
 import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { windowHeight } from '../utils/Dimensions';
 
@@ -20,6 +19,23 @@ const SocialPlatformButton = ({buttonTitle, buttonType, color, backgroundColor, 
 
   );
 };
+
+/* 
+<SocialPlatformButton 
+        buttonTitle='Sign In with Facebook'
+        buttonType='facebook'
+        color= '#4867aa'
+        backgroundColor= '#e6eaf4'
+        onPress={() => {}}
+      />
+      <SocialPlatformButton 
+        buttonTitle='Sign In with Google'
+        buttonType='google'
+        color= '#de4d41'
+        backgroundColor= '#f5e7ea'
+        onPress={() => {}}
+      />
+*/
 
 // define your styles
 const styles = StyleSheet.create({
