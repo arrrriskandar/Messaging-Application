@@ -1,80 +1,161 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import FormInput from '../components/FormInput';
-import FormButton from '../components/FormButton';
+import React, { useContext, useState, useRef } from 'react';
+import { Text, StyleSheet, Image, TouchableOpacity, KeyboardAvoidingView, TextInput, Button } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
+import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
+import { PhoneAuthProvider } from 'firebase/auth';
+import { firebaseConfig } from '../config/firebase';
+import { auth } from '../config/firebase';
+import CountryPicker from 'react-native-country-picker-modal';
 
-const LoginScreen = ({navigation}) => {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+
+
+const LoginScreen = () => {
+  const recaptchaVerifier = useRef(null);
+  const [phoneNumber, setPhoneNumber] = useState();
+  const [verificationId, setVerificationId] = useState();
+  const [verificationCode, setVerificationCode] = useState();
+
+  const [message, showMessage] = useState();
+  const attemptInvisibleVerification = false;
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [completePhoneNumber, setCompletePhoneNumber] = useState();
+  const [countryCode, setCountryCode] = useState('')
 
   const{login} = useContext(AuthContext);
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior='padding'>
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={firebaseConfig}
+      />
       <Image
-        source={require('../assets/logo-black.png')}
+        source={require('../assets/logo-color.png')}
         style={styles.logo}
       />
-      <FormInput 
-        labelValue={email}
-        onChangeText={(userEmail) => setEmail(userEmail)}
-        placeholderText='Email'
-        iconType='user'
-        keyboardType='email-address'
-        autoCapitalize='none'
-        autoCorrect={false}
+      <CountryPicker
+        withFilter
+        withFlag
+        withCountryNameButton
+        withCallingCode
+        withCallingCodeButton
+        countryCode={countryCode}
+        onSelect={(country) => {
+          setSelectedCountry(country)
+          setCountryCode(country.cca2)
+        }}
+        containerButtonStyle={styles.countryPicker}
+        visible
+        translation="eng"
+        placeholder="Country code"
       />
-      <FormInput 
-        labelValue={password}
-        onChangeText={(userPassword) => setPassword(userPassword)}
-        placeholderText='Password'
-        iconType='lock'
-        secureTextEntry={true}
+      <TextInput
+        style={styles.textInput}
+        autoFocus
+        autoCompleteType="tel"
+        keyboardType="phone-pad"
+        textContentType="telephoneNumber"
+        onChangeText={(number) => {
+          setPhoneNumber(number);
+        }}
+        placeholder='Enter phone number'
       />
-      <FormButton 
-        buttonTitle='Sign In'
-        onPress= {() => login(email,password)}
+      <Button
+        title="Send Verification Code"
+        disabled={!phoneNumber || !countryCode}
+        onPress={async () => {
+          try {
+            const fullPhoneNumber = `+${selectedCountry.callingCode[0]} ${phoneNumber}`;
+            setCompletePhoneNumber(fullPhoneNumber);
+            const phoneProvider = new PhoneAuthProvider(auth);
+            const verificationId = await phoneProvider.verifyPhoneNumber(
+              completePhoneNumber,
+              recaptchaVerifier.current
+            );
+            setVerificationId(verificationId);
+            showMessage({
+              text: 'Verification code has been sent to your phone.',
+            });
+          } catch (e) {
+            showMessage({ text: `Error: ${e.message}`, color: 'red' });
+          }
+        }}
       />
-      <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate('ForgotPassword')}>
-        <Text style={styles.navButtonText}>Forgot Password?</Text>
-      </TouchableOpacity>
-      <TouchableOpacity 
-        style={styles.navButton} 
-        onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.navButtonText}>Don't have an account? Create here!</Text>
-      </TouchableOpacity>
-    </View>
+      <TextInput
+        style={styles.textInput}
+        editable={!!verificationId}
+        onChangeText={setVerificationCode}
+        placeholder='Enter verification code'
+      />
+      <Button
+        title="Confirm Verification Code"
+        disabled={!verificationId}
+        onPress= {() => login(verificationId, verificationCode)}
+      />
+      {message ? (
+        <TouchableOpacity
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: 0xffffffee, justifyContent: 'center' },
+          ]}
+          onPress={() => showMessage(undefined)}>
+          <Text
+            style={{
+              color: message.color || 'white',
+              fontSize: 17,
+              textAlign: 'center',
+              margin: 20,
+            }}>
+            {message.text}
+          </Text>
+        </TouchableOpacity>
+      ) : undefined}
+      {attemptInvisibleVerification && <FirebaseRecaptchaBanner />}
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: '#1F2D59'
   },
   logo: {
-    height: 250,
-    width: 250,
+    height: 300,
+    width: 300,
     resizeMode: 'cover',
   },
-  text: {
-    fontSize: 28,
+  textInput: {
+    marginVertical: 10, 
+    fontSize: 17,
+    textAlign: 'center',
+    color: '#000',
+    backgroundColor: 'white',
+    width: 200,
+    height: 25,
+    borderRadius: 5
+  },
+  countryPicker: {
     marginBottom: 10,
-    color: '#051d5f',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    fontSize: 30,
+    backgroundColor: 'white',
+    borderRadius: 5
   },
-  navButton: {
-    marginTop: 15,
-  },
-  forgotButton: {
-    marginVertical: 35,
-  },
-  navButtonText: {
+  label: {
+    marginTop: 20,
     fontSize: 18,
-    fontWeight: '500',
-    color: '#2e64e5'
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  button: {
+    color: 'green',
   }
 });
 

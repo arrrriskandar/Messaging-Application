@@ -13,6 +13,7 @@ const AppStack = () => {
       <Stack.Screen 
         name='Home'
         component={HomeScreen}
+        options={{header: () => null}}
       />
     </Stack.Navigator>
   );
