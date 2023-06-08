@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
+import { Image } from 'react-native';
 import Onboarding from 'react-native-onboarding-swiper';
 
 const OnBoardingScreen = ({navigation}) => {

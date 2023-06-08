@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage'
 import Constants from 'expo-constants';
 
 // Your web app's Firebase configuration
@@ -14,6 +15,9 @@ export const firebaseConfig = {
   databaseURL: Constants.manifest.extra.databaseURL
 };
 
-initializeApp(firebaseConfig);
-export const auth = getAuth();
-export const database = getFirestore();
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const database = getFirestore(app);
+export const storage = getStorage(app);
+//export const db = initializeFirestore(app, {experimentalForceLongPolling:true,});
+
