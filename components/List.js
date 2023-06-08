@@ -1,10 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Grid, Row, Col } from "react-native-easy-grid";
 import ProfilePicture from "./ProfilePicture";
 
-export default function ListItem({
+export default function List({
   type,
   description,
   user,
@@ -14,6 +14,7 @@ export default function ListItem({
   image,
 }) {
   const navigation = useNavigation();
+  const profilePictureSize = type === "Contacts" ? 40 : 65;
 
   return (
     <TouchableOpacity
@@ -22,22 +23,22 @@ export default function ListItem({
     >
       <Grid style={{ maxHeight: 80 }}>
         <Col
-          style={{ width: 80, alignItems: "center", justifyContent: "center" }}
+          style={{ width: profilePictureSize, alignItems: "center", justifyContent: "center", borderRadius: profilePictureSize, height: profilePictureSize, overflow: "hidden" }}
         >
-          <ProfilePicture user={user} width={type === "Contacts" ? 40 : 65} height={type === "Contacts" ? 40 : 65} resize='cover'/>
+          <ProfilePicture user={user} width={profilePictureSize} height={profilePictureSize} resize='cover' />
         </Col>
         <Col style={{ marginLeft: 10 }}>
           <Row style={{ alignItems: "center" }}>
             <Col>
               <Text
-                style={{ fontWeight: "bold", fontSize: 16, color: "blue" }}
+                style={{ fontWeight: "bold", fontSize: 16, color: '#1F2D59' }}
               >
                 {user.contactName || user.displayName}
               </Text>
             </Col>
             {time && (
               <Col style={{ alignItems: "flex-end" }}>
-                <Text style={{ color: 'blue', fontSize: 11 }}>
+                <Text style={{ color: '#1F2D59', fontSize: 11 }}>
                   {new Date(time.seconds * 1000).toLocaleDateString()}
                 </Text>
               </Col>
@@ -45,7 +46,7 @@ export default function ListItem({
           </Row>
           {description && (
             <Row style={{ marginTop: -5 }}>
-              <Text style={{ color: 'blue', fontSize: 13 }}>
+              <Text style={{ color: '#1F2D59', fontSize: 13 }}>
                 {description}
               </Text>
             </Row>
@@ -55,3 +56,7 @@ export default function ListItem({
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+
+})
