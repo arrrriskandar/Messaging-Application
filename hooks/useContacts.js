@@ -11,7 +11,7 @@ export default function useContacts() {
       const { status } = await Contacts.requestPermissionsAsync();
       if (status === "granted") {
         const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.PhoneNumbers],
+          fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.FirstName],
         });
         if (data.length > 0) {
           const filteredContacts = await Promise.all(
@@ -20,25 +20,25 @@ export default function useContacts() {
               .map(async (contact) => {
                 const q = query(
                   collection(database, "users"),
-                  where("phoneNumber", "==", contact.phoneNumbers[0].number)
+                  where("phoneNumber", "==", contact.phoneNumbers[0].number.replace(/\s/g, ""))
                 );
                 const snapshot = await getDocs(q);
                 if (snapshot.docs.length > 0) {
                   return {
                     contactName: getContactName(contact),
-                    phoneNumber: contact.phoneNumbers[0].number,
+                    phoneNumber: contact.phoneNumbers[0].number.replace(/\s/g, ""),
                   };
                 }
                 return null;
               })
           );
           const validContacts = filteredContacts.filter(Boolean);
+          validContacts.sort((a, b) => a.contactName.localeCompare(b.contactName)); // Sort the contacts
           setContacts(validContacts);
         }
       }
     })();
   }, []);
-
   return contacts;
 }
 

@@ -1,16 +1,16 @@
 // @refresh reset
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, ImageBackground, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, ImageBackground, TouchableOpacity, Image, Modal } from 'react-native';
 import "react-native-get-random-values";
 import { nanoid } from "nanoid";
 import { auth, database } from '../config/firebase';
 import { addDoc, collection, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
-import { Actions, Bubble, Day, GiftedChat, InputToolbar, Time } from 'react-native-gifted-chat';
+import { Actions, Bubble, Day, GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 import { uploadImage } from '../utils/ImageUpload';
-import { pickImage } from '../utils/ImageSelect';
-import { ImageView } from 'react-native-image-viewing';
+import { pickImageFromCamera, pickImageFromLibrary } from '../utils/ImageSelect';
 import { useRoute } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
+import { useActionSheet } from '@expo/react-native-action-sheet';
 
 const randomId = nanoid();
 
@@ -18,18 +18,18 @@ const ChatScreen = () => {
   const [roomHash, setRoomHash] = useState('');
   const [messages, setMessages] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedImageView, setSeletedImageView] = useState("");
   const { currentUser } = auth;
   const route = useRoute();
   const room = route.params.room;
   const selectedImage = route.params.image;
   const userB = route.params.user;
+    const { showActionSheetWithOptions } = useActionSheet();
 
   const senderUser = currentUser.photoURL
     ? {
         name: currentUser.displayName,
         _id: currentUser.uid,
-        avatar: currentUser.photoURL,
+        profilePicture: currentUser.photoURL,
       }
     : { 
       name: currentUser.displayName, 
@@ -46,14 +46,14 @@ const ChatScreen = () => {
       if (!room) {
         const currUserData = {
           displayName: currentUser.displayName,
-          email: currentUser.phoneNumber,
+          phoneNumber: currentUser.phoneNumber,
         };
         if (currentUser.photoURL) {
           currUserData.photoURL = currentUser.photoURL;
         }
         const userBData = {
           displayName: userB.contactName || userB.displayName || "",
-          email: userB.phoneNumber,
+          phoneNumber: userB.phoneNumber,
         };
         if (userB.photoURL) {
           userBData.photoURL = userB.photoURL;
@@ -128,10 +128,28 @@ const ChatScreen = () => {
   }
 
   async function handlePhotoPicker() {
-    const result = await pickImage();
-    if (!result.cancelled) {
-      await sendImage(result.uri);
-    }
+    const options = ['Take Photo', 'Choose from Library', 'Cancel'];
+    const cancelButtonIndex = 2;
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+      },
+      async (buttonIndex) => {
+        if (buttonIndex === 0) {
+          const result = await pickImageFromCamera();
+          if (!result.cancelled) {
+            await sendImage(result.uri);
+          }
+        } else if (buttonIndex === 1) {
+          const result = await pickImageFromLibrary();
+          if (!result.cancelled) {
+            await sendImage(result.uri);
+          }
+        }
+      }
+    );
   }
 
   return (
@@ -189,10 +207,17 @@ const ChatScreen = () => {
         renderBubble={(props) => (
           <Bubble
             {...props}
-            textStyle={{ right: { color: '#1F2D59' } }}
+            textStyle={{ 
+              right: { 
+                color: 'white',
+                },
+              left: { 
+                color : 'white',
+                },
+              }}
             wrapperStyle={{
               left: {
-                backgroundColor: '#1F2D59',
+                backgroundColor: '#212121',
               },
               right: {
                 backgroundColor: '#1F2D59',
@@ -204,25 +229,33 @@ const ChatScreen = () => {
           return (
             <View style={styles.imageContainer}>
               <TouchableOpacity
-                onPress={() => {
-                  setModalVisible(true);
-                  setSeletedImageView(props.currentMessage.image);
-                }}
-              >
-                <Image
-                  resizeMode="contain"
-                  style={styles.image}
-                  source={{ uri: props.currentMessage.image }}
-                />
-                {selectedImageView ? (
-                  <ImageView
-                    imageIndex={0}
-                    visible={modalVisible}
-                    onRequestClose={() => setModalVisible(false)}
-                    images={[{ uri: selectedImageView }]}
+                onPress={() => setModalVisible(true)}
+                transparent={true}
+                >
+                  <Image
+                    resizeMode="cover"
+                    style={styles.image}
+                    source={{ uri: props?.currentMessage?.image }}
                   />
-                ) : null}
               </TouchableOpacity>
+              <Modal
+                visible={modalVisible}
+                transparent={true}
+                >
+                <TouchableOpacity
+                  onPress={() => {
+                  setModalVisible(false);
+                  }}
+                  transparent={true}
+                  style={styles.modalImageContainer}
+                  >
+                  <Image
+                    resizeMode="contain"
+                    style={styles.modalImage}
+                    source={{ uri: props?.currentMessage?.image }}
+                  />
+                </TouchableOpacity>
+              </Modal>
             </View>
           );
         }}
@@ -239,7 +272,6 @@ const ChatScreen = () => {
   );
 };
 
-// define your styles
 const styles = StyleSheet.create({
   imageBackground: {
     flex: 1,
@@ -282,9 +314,17 @@ const styles = StyleSheet.create({
     height: 200,
     padding: 6,
     borderRadius: 15,
-    resizeMode: "cover",
+  },
+  modalImageContainer: {
+    flex: 1,
+    backgroundColor:'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalImage : {
+    width: '100%',
+    height: '100%',
   },
 });
 
-//make this component available to the app
 export default ChatScreen;

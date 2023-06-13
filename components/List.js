@@ -14,39 +14,38 @@ export default function List({
   image,
 }) {
   const navigation = useNavigation();
-  const profilePictureSize = type === "Contacts" ? 40 : 65;
+  const profilePictureSize = type === "Contacts" ? 50 : 65;
+  const containerHeight = type === "Contacts" ? 55 : 80;
 
   return (
     <TouchableOpacity
-      style={{ height: 80, ...style }}
+      style={{ height: containerHeight,  ...style }}
       onPress={() => navigation.navigate("Chat", { user, room, image })}
     >
-      <Grid style={{ maxHeight: 80 }}>
+      <Grid style={styles.grid}>
         <Col
-          style={{ width: profilePictureSize, alignItems: "center", justifyContent: "center", borderRadius: profilePictureSize, height: profilePictureSize, overflow: "hidden" }}
+          style={[styles.profilePictureContainer, { width:profilePictureSize, height:profilePictureSize, borderRadius:profilePictureSize}]}
         >
           <ProfilePicture user={user} width={profilePictureSize} height={profilePictureSize} resize='cover' />
         </Col>
-        <Col style={{ marginLeft: 10 }}>
-          <Row style={{ alignItems: "center" }}>
+        <Col style={styles.textContainer}>
+          <Row style={styles.nameAndDateContainer}>
             <Col>
-              <Text
-                style={{ fontWeight: "bold", fontSize: 16, color: '#1F2D59' }}
-              >
+              <Text style={styles.nameText}>
                 {user.contactName || user.displayName}
               </Text>
             </Col>
             {time && (
-              <Col style={{ alignItems: "flex-end" }}>
-                <Text style={{ color: '#1F2D59', fontSize: 11 }}>
+              <Col style={styles.dateContainer}>
+                <Text style={styles.dateText}>
                   {new Date(time.seconds * 1000).toLocaleDateString()}
                 </Text>
               </Col>
             )}
           </Row>
           {description && (
-            <Row style={{ marginTop: -5 }}>
-              <Text style={{ color: '#1F2D59', fontSize: 13 }}>
+            <Row style={styles.lastMessageContainer}>
+              <Text style={styles.lastMessageText}>
                 {description}
               </Text>
             </Row>
@@ -58,5 +57,37 @@ export default function List({
 }
 
 const styles = StyleSheet.create({
-
+  grid: {
+    maxHeight: 80,
+  },
+  profilePictureContainer: {
+    alignItems: "center", 
+    justifyContent: "center", 
+    overflow: "hidden",
+  },
+  textContainer: {
+    marginLeft: 10,
+  },
+  nameAndDateContainer: {
+    alignItems: "center",
+  },
+  nameText: {
+    fontWeight: "bold", 
+    fontSize: 16, 
+    color: '#1F2D59',
+  },
+  dateContainer: {
+    alignItems: "flex-end",
+  },
+  dateText: {
+    color: '#1F2D59', 
+    fontSize: 11,
+  },
+  lastMessageContainer: {
+    marginTop: -5,
+  },
+  lastMessageText: {
+    color: '#1F2D59', 
+    fontSize: 13,
+  },
 })

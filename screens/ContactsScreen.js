@@ -5,10 +5,9 @@ import useContacts from '../hooks/useContacts';
 import GlobalContext from '../context/Context';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { database } from '../config/firebase';
-import ListItem from '../components/List';
+import List from '../components/List';
 import { useRoute } from '@react-navigation/native';
 
-// create a component
 const ContactsScreen = () => {
   const contacts = useContacts();
   const route = useRoute();
@@ -21,7 +20,7 @@ const ContactsScreen = () => {
       renderItem={({ item }) => <ContactPreview contact={item} image={image} />}
     />
   );
-};
+}
 
 function ContactPreview({ contact, image }) {
   const { unfilteredRooms } = useContext(GlobalContext);
@@ -35,13 +34,15 @@ function ContactPreview({ contact, image }) {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (snapshot.docs.length) {
         const userDoc = snapshot.docs[0].data();
-        setUser((prevUser) => ({ ...prevUser, userDoc }));
+        setUser((prevUser) => ({ ...prevUser, ...userDoc }));
       }
     });
     return () => unsubscribe();
   }, []);
+
+
   return (
-    <ListItem
+    <List
       style={{ marginTop: 7 }}
       type="Contacts"
       user={user}

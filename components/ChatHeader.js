@@ -1,18 +1,16 @@
-//import liraries
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import ProfilePicture from './ProfilePicture';
 import { useState } from 'react';
 import { useRoute } from '@react-navigation/native';
-import { windowHeight, windowWidth } from '../utils/Dimensions';
 
-// create a component
 const ChatHeader = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const route = useRoute();
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={() => setModalVisible(true)}
+        onPress={() => {
+          setModalVisible(true)}}
         style={styles.profilePictureContainer}
         transparent={true}
         >
@@ -34,8 +32,8 @@ const ChatHeader = () => {
             >
           <ProfilePicture 
               user={route.params.user} 
-              width={windowWidth}
-              height={windowHeight}
+              width='100%'
+              height='100%'
               resize='contain'
           />
         </TouchableOpacity>
@@ -51,7 +49,6 @@ const ChatHeader = () => {
   );
 };
 
-// define your styles
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",

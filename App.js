@@ -8,12 +8,18 @@ import OnBoardingScreen from "./screens/OnBoardingScreen";
 import LoginScreen from './screens/LoginScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeScreen from './screens/HomeScreen';
-import ProfileScreen from './screens/ProfileScreen';
-import { Text } from 'react-native'
+import ProfileSetUpScreen from './screens/ProfileSetUpScreen';
+import { LogBox, Text } from 'react-native'
 import ContactsScreen from "./screens/ContactsScreen";
 import ChatScreen from "./screens/ChatScreen";
 import ChatHeader from './components/ChatHeader';
+import { HeaderBackButton } from '@react-navigation/elements';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
+LogBox.ignoreLogs([  
+  'Constants.platform.ios.model has been deprecated in favor of expo-device\'s Device.modelName property. This API will be removed in SDK 45.',
+  "AsyncStorage has been extracted from react-native core and will be removed in a future release.",
+])
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -73,8 +79,8 @@ const App = () => {
       <Stack.Navigator>
         {!currUser.displayName && 
           <Stack.Screen 
-          name='Profile'
-          component={ProfileScreen}
+          name='ProfileSetUp'
+          component={ProfileSetUpScreen}
           options={{header: () => null}}
         />
         }
@@ -107,7 +113,7 @@ const App = () => {
         <Stack.Screen
           name='Chat'
           component={ChatScreen}
-          options={{
+          options={({ navigation }) => ({
             headerStyle: {
               backgroundColor: '#1F2D59',
             },
@@ -115,8 +121,14 @@ const App = () => {
             headerTintColor: 'white',
             headerBackTitleVisible: false,
             headerTitle: (props) => 
-            <ChatHeader {...props} />
-          }}
+            <ChatHeader {...props} />,
+            headerLeft: () => (
+              <HeaderBackButton
+                onPress={() => navigation.navigate('Home')}
+                tintColor="white"
+              />
+            ),
+          })}
         />
       </Stack.Navigator>
       )}
@@ -126,9 +138,11 @@ const App = () => {
 
 function Main() {
   return (
-    <ContextWrapper>
-      <App />
-    </ContextWrapper>
+    <ActionSheetProvider>
+      <ContextWrapper>
+        <App />
+      </ContextWrapper>
+    </ActionSheetProvider>
   );
 }
 

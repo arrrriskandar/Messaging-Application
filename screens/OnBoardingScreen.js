@@ -11,7 +11,7 @@ const OnBoardingScreen = ({navigation}) => {
           backgroundColor: '#1F2D59',
           image: <Image source={require('../assets/logo-color.png')} style={{ width: 300, height: 300}} />,
           title: 'Welcome to Chatter! ',
-          subtitle: 'Connecting people around the world',
+          subtitle: 'Connecting people around the world.',
         },
         {
           backgroundColor: '#1F2D59',
@@ -21,9 +21,9 @@ const OnBoardingScreen = ({navigation}) => {
         },
         {
           backgroundColor: '#1F2D59',
-          image: <Image source={require('../assets/multimedia.png')} style={{ width: 250, height:250 }} />,
-          title: 'Supports multimedia sharing',
-          subtitle: 'Share photos, videos, and other media files seamlessly within the app with the people who matter most to you.',
+          image: <Image source={require('../assets/camera.png')} style={{ width: 250, height:250 }} />,
+          title: 'Seemless photo sharing',
+          subtitle: 'Share moments through photos within Chatter with the people who matter most to you.',
         },
       ]}
     />

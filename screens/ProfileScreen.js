@@ -1,108 +1,67 @@
-//import liraries
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, Image, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { pickImage, askForPermission } from '../utils/ImageSelect';
-import { uploadImage } from '../utils/ImageUpload';
-import { auth, database } from '../config/firebase';
-import { updateProfile } from "@firebase/auth";
-import { doc, setDoc } from "@firebase/firestore";
+import { auth } from '../config/firebase';
+import { signOut } from 'firebase/auth';
+import { Alert } from 'react-native';
+import ProfilePicture from '../components/ProfilePicture';
 
 // create a component
 const ProfileScreen = ({navigation}) => {
-  const [displayName, setDisplayName] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [permissionStatus, setPermissionStatus] = useState(null);
+  const user = auth.currentUser;
+  const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const status = await askForPermission();
-      setPermissionStatus(status);
-    })();
-  }, []);
-
-  async function handlePress() {
-    const user = auth.currentUser;
-    let photoURL;
-    if (selectedImage) {
-      const { url } = await uploadImage(
-        selectedImage,
-        `images/${user.uid}`,
-        "profilePicture"
-      );
-      photoURL = url;
-    }
-    const userData = {
-      displayName,
-      phoneNumber: user.phoneNumber,
-    };
-    if (photoURL) {
-      userData.photoURL = photoURL;
-    }
-
-    await Promise.all([
-      updateProfile(user, userData),
-      setDoc(doc(database, "users", user.uid), { ...userData, uid: user.uid }),
-    ]);
-    navigation.navigate('Home');
-  }
-
-  async function handleProfilePicture() {
-    const result = await pickImage();
-    if (!result.cancelled) {
-      setSelectedImage(result.uri);
-    }
-  }
-
-  if (!permissionStatus) {
-    return <Text>Loading</Text>;
-  }
-  if (permissionStatus !== "granted") {
-    return <Text>You need to allow this permission</Text>;
-  }
   return (
     <React.Fragment>
       <StatusBar style="auto" />
       <View style={styles.container}>
         <Text style={styles.textTitle}>
-          Profile Info
-        </Text>
-        <Text style={styles.textHint}>
-          Please provide your name and an optional profile photo
+          {user.displayName}
         </Text>
         <TouchableOpacity
-          onPress={handleProfilePicture}
+          onPress={() => setModalVisible(true)}
           style={styles.profilePictureContainer}
-        >
-          {!selectedImage ? (
-            <MaterialCommunityIcons
-              name="camera-plus"
-              color='#1F2D59'
-              size={45}
-            />
-          ) : (
-            <Image
-              source={{ uri: selectedImage }}
-              style={styles.profilePicture}
-            />
-          )}
+          transparent={true}
+          >
+          <ProfilePicture 
+            user={user}
+            width={200}
+            height={200}
+            resize='cover'
+          />
         </TouchableOpacity>
-        <TextInput
-          placeholder="Type your name"
-          placeholderTextColor='white'
-          value={displayName}
-          onChangeText={setDisplayName}
-          style={styles.textDisplayName}
-          returnKeyType='done'
-        />
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          >
+          <TouchableOpacity
+            onPress={() => {
+            setModalVisible(false);
+            }}
+            style={styles.profilePictureModalContainer}
+            transparent={true}
+            >
+            <ProfilePicture 
+              user={user}
+              width='100%'
+              height='100%'
+              resize='contain'
+            />
+          </TouchableOpacity>
+        </Modal>
         <View style={styles.buttonContainer}>
           <Button
-            title="Next"
-            color='white'
-            onPress={handlePress}
-            disabled={!displayName}
+            title="Sign Out"
+            color='#1F2D59'
+            onPress={async() => {
+              try{
+                await signOut(auth);
+                navigation.navigate('Login');
+              }catch(e){
+                Alert.alert(e);
+              }
+            }}
           />
         </View>
       </View>
@@ -118,49 +77,36 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: Constants.statusBarHeight + 20,
     padding: 20,
-    backgroundColor: '#1F2D59',
-  },
-
-  textTitle: {
-    fontSize: 22,
-    color: 'white',
-  },
-
-  textHint: {
-    fontSize: 14, 
-    marginTop: 20,
-    color: 'white',
-  },
-  profilePictureContainer: {
-    marginTop: 30,
-    borderRadius: 120,
-    width: 120,
-    height: 120,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: 'white',
   },
 
-  profilePicture: {
-    width: "100%", 
-    height: "100%", 
-    borderRadius: 120,
+  textTitle: {
+    fontSize: 28,
+    color: '#1F2D59',
+    fontWeight: 'bold',
   },
 
-  textDisplayName: {
-    marginTop: 60,
-    borderBottomWidth: 2,
-    width: "60%",
-    borderBottomColor: 'white',
-    fontSize: 20,
-    textAlign: 'center',
-    color: 'white',
-    paddingBottom: 10,
+  profilePictureContainer: {
+    marginTop: 40,
+    marginBottom: 10,
+    borderRadius: 200,
+    width: 200,
+    height: 200,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: 'hidden',
+  },
+
+  profilePictureModalContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   buttonContainer: {
     marginTop: "auto", 
-    width: 80,
+    width: 150,
   },
 });
 

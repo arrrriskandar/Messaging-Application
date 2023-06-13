@@ -1,5 +1,5 @@
 import ChatsScreen from "./ChatsScreen";
-import EditProfileScreen from "./EditProfileScreen";
+import ProfileScreen from "./ProfileScreen";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -15,7 +15,7 @@ const HomeScreen = () => {
 
           if (route.name === 'Chats') {
             iconName = 'chat';
-          } else if (route.name === 'EditProfile') {
+          } else if (route.name === 'Profile') {
             iconName = 'person';
           }
 
@@ -34,8 +34,8 @@ const HomeScreen = () => {
       })}
       >
       <Tab.Screen 
-        name="EditProfile" 
-        component={EditProfileScreen}
+        name="Profile" 
+        component={ProfileScreen}
         options={{
           tabBarShowLabel: false,
           }} 

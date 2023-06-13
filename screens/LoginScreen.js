@@ -126,8 +126,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow:1,
-    alignItems: 'center', // Align items horizontally
-    justifyContent: 'top', // Align items vertically
+    alignItems: 'center', 
   },
   logo: {
     height: 400,
@@ -156,5 +155,4 @@ const styles = StyleSheet.create({
   },
 });
 
-//make this component available to the app
 export default LoginScreen;
